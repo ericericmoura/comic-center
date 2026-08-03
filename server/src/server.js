@@ -1,17 +1,20 @@
-import express from 'express';
-import { config } from 'dotenv'
+import "./config/env.js";
+import express from "express";
+import { connectToDatabase, disconnectFromDatabase } from "./config/database.js";
 
-config();
+import authRoutes from "./routes/authRoutes.js"
+
+connectToDatabase();
 
 const app  = express();
 const port = process.env.PORT;
 
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.get("/", (req, res) => {
-  res.status(200).json({status: "success", message: "Welcome to the comic center API."});
-})
+// Routes
+app.use("/authentication", authRoutes);
 
 const server = app.listen(port, () => {
   console.log(`Server is now running at http://localhost:${port}.`);
@@ -19,19 +22,22 @@ const server = app.listen(port, () => {
 
 process.on("unhandledRejection", (err) => {
   console.log("Unhandled Rejection: ", err);
-  server.close(() => {
+  server.close(async () => {
+    await disconnectFromDatabase();
     process.exit(1);
   })
 })
 
-process.on("uncaughtException", (err) => {
+process.on("uncaughtException", async (err) => {
   console.log("Uncaught Exception: ", err);
+  await disconnectFromDatabase();
   process.exit(1);
 });
 
 process.on("SIGTERM", () => {
   console.log("SIGTERM received, shutting down gracefully.");
-  server.close(() => {
+  server.close(async () => {
+    await disconnectFromDatabase();
     process.exit(0);
   })
 });
