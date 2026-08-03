@@ -1,0 +1,12 @@
+services:
+  server:
+    image: comic-center-server
+    container_name: comic-center-server
+    pull_policy: never
+    build:
+      context: ./server
+      dockerfile: dockerfile.local      
+    ports:
+      - 3000:3000
+    volumes:
+      - ./server:/app
