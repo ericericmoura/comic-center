@@ -9,3 +9,6 @@ dist/
 .DS_Store
 coverage/
 db/password.txt
+/src/generated/prisma
+.claude
+.windsurf

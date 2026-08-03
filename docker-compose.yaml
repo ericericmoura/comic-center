@@ -1,7 +1,6 @@
 services:
   server:
     image: comic-center-server
-    container_name: comic-center-server
     pull_policy: never
     build:
       context: ./server
@@ -10,3 +9,21 @@ services:
       - 3000:3000
     volumes:
       - ./server:/app
+  database:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: comic_center
+    env_file:
+      - ./database/.env
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+volumes: 
+ postgres_data:

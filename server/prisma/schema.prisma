@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model users {
+  id            Int      @id @default(autoincrement())
+  fullname      String
+  username      String
+  role          Role     @default(USER)
+  date_of_birth DateTime @db.Date
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  ratings user_ratings[]
+}
+
+model comics {  
+  id           Int      @id @default(autoincrement())
+  title        String
+  page_count   Int
+  release_year Int      @default(2026)
+  language_id  Int?
+  created_at   DateTime @default(now())
+  updated_at   DateTime
+  
+  language languages? @relation(fields: [language_id], references: [id], onDelete: SetNull)
+
+  ratings user_ratings[]
+}
+
+model user_ratings {
+  id         Int      @id @default(autoincrement()) 
+  user_id    Int
+  comic_id   Int
+  rating     Int
+  created_at DateTime @default(now())  
+
+  user  users  @relation(fields: [user_id ], references: [id], onDelete: Cascade)
+  comic comics @relation(fields: [comic_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, comic_id])  
+}
+
+model languages {
+  id         Int      @id @default(autoincrement())
+  name       String
+  code       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  comics comics[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
