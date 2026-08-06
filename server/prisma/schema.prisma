@@ -13,16 +13,16 @@ datasource db {
 }
 
 model users {
-  id            Int      @id @default(autoincrement())
-  fullname      String
-  username      String 
-  email         String   @unique
-  password_hash String
-  role          Role     @default(USER)
-  date_of_birth DateTime @db.Date
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-
+  id              Int      @id @default(autoincrement())
+  fullname        String
+  username        String 
+  email           String   @unique
+  confirmed_email Boolean  @default(false)
+  password_hash   String
+  role            Role     @default(USER)
+  date_of_birth   DateTime @db.Date
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
   ratings user_ratings[]
 }
 
