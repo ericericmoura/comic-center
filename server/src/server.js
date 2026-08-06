@@ -3,7 +3,8 @@ import express from "express";
 import { connectToDatabase, disconnectFromDatabase, prisma } from "./config/database.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import authRoutes from "./routes/authRoutes.js"
-
+import { authMiddleware } from "./middlewares/authMiddleware.js";
+import { Role } from "./generated/prisma/enums.ts"; 
 
 connectToDatabase();
 
@@ -19,6 +20,14 @@ app.use("/authentication", authRoutes);
 
 app.get("/hello", async (req, res) => {  
   res.status(200).json({message: "Hello, World!"});
+});
+
+app.get("/secure/user", authMiddleware(Role.USER), async (req, res) => {
+  res.status(200).json({ message: "Hello, User!" });
+});
+
+app.get("/secure/admin", authMiddleware(Role.ADMIN), async (req, res) => {
+  res.status(200).json({ message: "Hello, Admin!" });
 });
 
 // error handling middlewares

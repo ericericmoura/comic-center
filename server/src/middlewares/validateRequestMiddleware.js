@@ -1,6 +1,7 @@
 export const validateRequestMiddleware = (schema) => {
     return (req, res, next) => {
         const result = schema.safeParse(req.body);
+        
         if (!result.success) {
           const formatted = result.error.format();
 

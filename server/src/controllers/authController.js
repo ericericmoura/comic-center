@@ -45,7 +45,27 @@ const register = async (req, res) => {
     res.status(201).json({status: "success", data});
 };
 
-const login    = async (req, res) => { res.status(500).json({message: "Not implemented."})};
+const login = async (req, res) => { 
+  const {email, password} = req.body;
+
+  const user = await prisma.users.findUnique({where: {email}});
+  if (!user)
+  {
+    return res.status(401).json({ error: "Invalid e-mail or password." });
+  }
+
+  const password_hash = user.password_hash; 
+  const isPasswordValid = await bcrypt.compare(password, password_hash);
+  if (!isPasswordValid)
+  {
+    return res.status(401).json({ error: "Invalid e-mail or password." });
+  }
+
+  generateToken(user.id, user.role, res);
+
+  res.status(200).json({message: "You are now logged in."})
+};
+
 const logout   = async (req, res) => { res.status(500).json({message: "Not implemented."})};
 
 export {register, login, logout};
