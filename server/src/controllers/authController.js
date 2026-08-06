@@ -4,7 +4,7 @@ import { prisma } from "../config/database.js"
 import { isPasswordStrong } from "../utils/passwordUtils.js";
 import { Role } from "../generated/prisma/enums.ts";
 import { generateToken, generateLoginToken } from "../utils/generateToken.js";
-import { sendEmailConfirmation } from "../utils/sendEmail.js";
+import { sendEmailConfirmation, sendPasswordRecoveryEmail } from "../utils/sendEmail.js";
 
 const register = async (req, res) => { 
     const {fullname, username, email, password, date_of_birth} = req.body;
@@ -32,6 +32,9 @@ const register = async (req, res) => {
         role: Role.USER
     }});
 
+    // Generate JWT token
+    generateLoginToken(user.id, user.role, res);
+
     await sendEmailConfirmation(user.email);
 
     const data = {
@@ -53,10 +56,6 @@ const login = async (req, res) => {
   if (!user)
   {
     return res.status(401).json({ error: "Invalid e-mail or password." });
-  }
-  if (!user.confirmed_email)
-  {
-    return res.status(401).json({error: "Please, confirm your e-mail adress."});
   }
 
   const password_hash   = user.password_hash; 
@@ -112,10 +111,73 @@ const confirmEmail = async (req, res) => {
   res.status(200).json({ message: "success: e-mail confirmed." });
 };
 
+const forgotPassword = async (req, res) => {
+  const {email} = req.body;
+  const userExists = await prisma.users.findUnique({
+    where: { email },
+  });
+  if (!userExists) {
+    return res.status(404).json({ error: "User not found." });
+  }
+  await sendPasswordRecoveryEmail(email);  
+  res.status(200).json({message: "password recovery email sent."});
+};
+
+const resetPasswordForm = async (req, res) => {  
+  const {token} = req.params;
+  const decoded = jwt.decode(token, process.env.JWT_SECRET);
+  if (!decoded || !decoded.email)
+  {
+    return res.status(400).json({error: "Invalid token."});
+  }
+
+  const user = await prisma.users.findUnique({where: {email: decoded.email}});
+  if (!user)
+  {
+    return res.status(404).json({error: "user not found."});
+  }
+
+  res.body = {token};
+
+  return res
+    .status(200)
+    .send(
+      `<form method="post" action="/authentication/reset-password">
+        <input type="hidden" name="token" value="${token}">
+        <input type="password" name="password" required>
+        <input type="submit" value="Reset Password">
+      </form>`,
+    );
+};
+
+const resetPassword = async (req, res) => {
+  const {token, password} = req.body;
+
+  const decoded = jwt.decode(token, process.env.JWT_SECRET);
+  if (!decoded || !decoded.email) {
+    return res.status(400).json({ error: "Invalid token." });
+  }
+
+  const userExists = await prisma.users.findUnique({ where: { email: decoded.email } });
+  if (!userExists) {
+    return res.status(404).json({ error: "user not found." });
+  }
+
+  const salt         = await bcrypt.genSalt();
+  const passwordHash = await bcrypt.hash(password, salt);
+  
+  await prisma.users.update({where: {email: decoded.email}, data: {password_hash: passwordHash}});
+
+  res.status(200).json({message: "Successfully updated password"});
+}
+
 export {
   register,
   login,
   logout,
   resendConfirmationEmail,
   confirmEmail,
+  forgotPassword,
+  resetPasswordForm,
+  resetPassword
 };

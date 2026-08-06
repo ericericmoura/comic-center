@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import { prisma } from "../config/database.js";
 import { validateRole } from "../utils/validateRole.js";
 
-export const authMiddleware = (requiredRole) => {
+export const authMiddleware = (requiredRole, requireConfirmedEmail = true) => {
     return async (req, res, next) => {
         let token;
         if (req.headers.authorization && req.headers.authorization.startsWith("Bearer"))
@@ -38,11 +38,11 @@ export const authMiddleware = (requiredRole) => {
                     .status(404)
                     .json({ error: "Account no longer exists." });
             }
-            if (!userExists.confirmed_email)
+            if (requireConfirmedEmail && !userExists.confirmed_email)
             {
                 return res
                   .status(401)
-                  .json({ error: "Please, confirm your e-mail adress." });
+                  .json({ error: "Confirm your e-mail adress to use this route." });
             }
             req.auth = {
                 role: decoded.role,

@@ -37,5 +37,16 @@ export const sendEmailConfirmation = async (recipient) => {
 }
 
 export const sendPasswordRecoveryEmail = async (recipient) => {
-  throw new Error("not implemented.");
+  const payload = {email: recipient};
+  const token   = generateToken(payload, "15m");
+  
+  const link = `${process.env.SERVER_URL}/authentication/reset-password/${token}`;
+
+  await sendEmail(
+    process.env.SECURITY_EMAIL,
+    recipient,
+    "Password Recover",
+    `recover your password by clicking on this link: ${link}`,
+    `<p>recover your password by clicking on this link: ${link}</p>`,
+  );
 };

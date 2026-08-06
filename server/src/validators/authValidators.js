@@ -31,3 +31,8 @@ export const loginSchema = z.object({
 export const resendEmailConfirmationSchema = z.object({
   email: z.email(),
 });
+
+export const resetPasswordSchema = z.object({
+  token:    z.string(),
+  password: strongPasswordSchema,
+});
