@@ -2,6 +2,7 @@ import bcrypt from "bcrypt"
 import { prisma } from "../config/database.js"
 import { isPasswordStrong } from "../utils/passwordUtils.js";
 import { Role } from "../generated/prisma/enums.ts";
+import { generateToken } from "../utils/generateToken.js";
 
 const register = async (req, res) => { 
     const {fullname, username, email, password, date_of_birth} = req.body;
@@ -13,15 +14,6 @@ const register = async (req, res) => {
     if (userExists)
     {
         return res.status(400).json({error: "A user with that e-mail already exists in the database."});
-    }
-
-    // Check if password is strong
-    if (!isPasswordStrong(password))
-    {
-        return res.status(400).json({
-          error:
-            "The provided password is weak. It must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, one number, and one special character (@$!%*?&).",
-        });
     }
 
     // Create password hash
@@ -38,6 +30,9 @@ const register = async (req, res) => {
         role: Role.USER
     }});
 
+    // Generate JWT token
+    generateToken(user.id, user.role, res);
+
     const data = {
       id: user.id,
       fullname,
@@ -49,7 +44,6 @@ const register = async (req, res) => {
 
     res.status(201).json({status: "success", data});
 };
-
 
 const login    = async (req, res) => { res.status(500).json({message: "Not implemented."})};
 const logout   = async (req, res) => { res.status(500).json({message: "Not implemented."})};
