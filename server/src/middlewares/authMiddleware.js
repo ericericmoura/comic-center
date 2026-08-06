@@ -19,6 +19,13 @@ export const authMiddleware = (requiredRole) => {
         }
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            if (!decoded.role || !decoded.id)
+            {
+                return res
+                  .status(401)
+                  .json({ error: "Not authorized." });
+            }
+            
             if (!validateRole(requiredRole, decoded.role)) {
               return res
                 .status(403)

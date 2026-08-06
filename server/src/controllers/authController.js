@@ -35,7 +35,7 @@ const register = async (req, res) => {
     // Generate JWT token
     generateLoginToken(user.id, user.role, res);
 
-    await sendEmailConfirmation(email, link);
+    await sendEmailConfirmation(user.email);
 
     const data = {
       id: user.id,
@@ -62,7 +62,7 @@ const login = async (req, res) => {
     return res.status(401).json({error: "Please, confirm your e-mail adress."});
   }
 
-  const password_hash = user.password_hash; 
+  const password_hash   = user.password_hash; 
   const isPasswordValid = await bcrypt.compare(password, password_hash);
   if (!isPasswordValid)
   {
@@ -92,7 +92,7 @@ const resendConfirmationEmail = async (req, res) => {
   {
     return res.status(400).json({error: "user's e-mail is already confirmed."});
   }  
-  await sendEmailConfirmation(email, link);
+  await sendEmailConfirmation(email);
 
   res.status(200).json({message: "Confirmation e-mail sent."});
 };

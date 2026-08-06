@@ -27,3 +27,7 @@ export const loginSchema = z.object({
   email:    z.email(),
   password: z.string("Password must be a string"),
 });
+
+export const resendEmailConfirmationSchema = z.object({
+  email: z.email(),
+});

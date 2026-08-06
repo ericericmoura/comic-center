@@ -1,4 +1,5 @@
 import { transporter } from "../config/emailTransporter.js";
+import { generateToken } from "./generateToken.js";
 import nodemailer from "nodemailer"
 
 export const sendEmail = async (sender, recipients, subject, text, html) => {
@@ -20,8 +21,8 @@ export const sendEmail = async (sender, recipients, subject, text, html) => {
   }
 };
 
-export const sendEmailConfirmation = async (recipient, link) => {
-    const payload = { email: user.email };
+export const sendEmailConfirmation = async (recipient) => {
+    const payload = { email: recipient };
     const token = generateToken(payload, "15m");
     
     const link = `${process.env.SERVER_URL}/authentication/confirm-email/${token}`;
@@ -35,12 +36,6 @@ export const sendEmailConfirmation = async (recipient, link) => {
     );
 }
 
-export const sendPasswordRecoveryEmail = async () => {
-    return await sendEmail(
-      process.env.SECURITY_EMAIL,
-      email,
-      "Password recovery",
-      "not implemented.",
-      "<p>not implemented.</p>",
-    );
-}
+export const sendPasswordRecoveryEmail = async (recipient) => {
+  throw new Error("not implemented.");
+};

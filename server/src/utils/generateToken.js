@@ -8,8 +8,8 @@ export const generateToken = (payload, expiresIn) => {
     return token;
 }
 
-export const generateLoginToken = (userId, res) => {
-    const payload = { id: userId };
+export const generateLoginToken = (userId, role, res) => {
+    const payload = { id: userId, role };
     const token   = generateToken(payload, process.env.JWT_EXPIRES_IN);
     
     res.cookie("jwt", token, {
