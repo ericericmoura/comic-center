@@ -38,6 +38,12 @@ export const authMiddleware = (requiredRole) => {
                     .status(404)
                     .json({ error: "Account no longer exists." });
             }
+            if (!userExists.confirmed_email)
+            {
+                return res
+                  .status(401)
+                  .json({ error: "Please, confirm your e-mail adress." });
+            }
             req.auth = {
                 role: decoded.role,
                 id: decoded.id,

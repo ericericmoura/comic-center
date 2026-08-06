@@ -32,9 +32,6 @@ const register = async (req, res) => {
         role: Role.USER
     }});
 
-    // Generate JWT token
-    generateLoginToken(user.id, user.role, res);
-
     await sendEmailConfirmation(user.email);
 
     const data = {
