@@ -66,6 +66,10 @@ const login = async (req, res) => {
   res.status(200).json({message: "You are now logged in."})
 };
 
-const logout   = async (req, res) => { res.status(500).json({message: "Not implemented."})};
+const logout   = async (req, res) => { 
+  res.cookie("jwt", "", {maxAge: new Date(0), httpOnly: true});
+
+  res.status(200).json({message: "Successfully logged out."});
+};
 
 export {register, login, logout};
