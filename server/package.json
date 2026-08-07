@@ -8,8 +8,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:docker": "nodemon --legacy-watch ./src/server.js",
     "dev": "nodemon ./src/server.js",
+    
     "seed:comics"   : "node ./src/config/seeding/comicsSeeding.js",
-    "seed:languages": "node ./src/config/seeding/languagesSeeding.js"
+    "seed:languages": "node ./src/config/seeding/languagesSeeding.js",
+    "seed:users"    : "node ./src/config/seeding/usersSeeding.js"
   },
   "author": "",
   "license": "ISC",
