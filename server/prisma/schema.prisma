@@ -33,7 +33,8 @@ model comics {
   release_year Int      @default(2026)
   language_id  Int?
   created_at   DateTime @default(now())
-  updated_at   DateTime
+  updated_at   DateTime @updatedAt
+  deleted      Boolean  @default(false)
   
   language languages? @relation(fields: [language_id], references: [id], onDelete: SetNull)
 
@@ -46,6 +47,7 @@ model user_ratings {
   comic_id   Int
   rating     Int
   created_at DateTime @default(now())  
+  updated_at DateTime @updatedAt
 
   user  users  @relation(fields: [user_id ], references: [id], onDelete: Cascade)
   comic comics @relation(fields: [comic_id], references: [id], onDelete: Cascade)

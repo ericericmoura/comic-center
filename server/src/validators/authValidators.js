@@ -1,7 +1,5 @@
 import z from "zod";
 
-const roles = ["USER", "ADMIN"];
-
 const strongPasswordSchema = z
   .string()
   .min(8, { message: "Password must be at least 8 characters long" })
@@ -17,7 +15,6 @@ export const registerSchema = z.object({
   username:      z.string("Username must be a string"),
   email:         z.email(),
   password:      strongPasswordSchema,
-  role:          z.enum(roles, "Roles must be one of: USER, ADMIN").optional(),
   date_of_birth: z.coerce.date()
 	.min(new Date("1900-01-01"), "Invalid date of birth, you can't really be that old"   )
 	.max(new Date()            , "Invalid date of birth, you can't be born in the future"),
@@ -26,10 +23,6 @@ export const registerSchema = z.object({
 export const loginSchema = z.object({
   email:    z.email(),
   password: z.string("Password must be a string"),
-});
-
-export const resendEmailConfirmationSchema = z.object({
-  email: z.email(),
 });
 
 export const resetPasswordSchema = z.object({
