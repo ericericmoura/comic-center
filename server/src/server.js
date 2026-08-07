@@ -4,6 +4,7 @@ import { connectToDatabase, disconnectFromDatabase, prisma } from "./config/data
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 import authRoutes from "./routes/authRoutes.js"
 import comicsRoutes from "./routes/comicsRoutes.js"
+import comicRatingsRoutes from "./routes/comicRatingsRoutes.js";
 import { authMiddleware } from "./middlewares/authMiddleware.js";
 import { Role } from "./generated/prisma/enums.ts"; 
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({extended: true}));
 // Routes
 app.use("/authentication", authRoutes  );
 app.use("/comics"        , comicsRoutes);
+app.use("/comic-ratings" , comicRatingsRoutes);
 
 app.get("/hello", async (req, res) => {  
   res.status(200).json({message: "Hello, World!"});

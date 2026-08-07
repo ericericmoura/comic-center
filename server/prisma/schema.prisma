@@ -23,7 +23,8 @@ model users {
   date_of_birth   DateTime @db.Date
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
-  ratings user_ratings[]
+
+  comic_ratings comic_ratings[]
 }
 
 model comics {  
@@ -38,12 +39,12 @@ model comics {
   
   language languages? @relation(fields: [language_id], references: [id], onDelete: SetNull)
 
-  ratings user_ratings[]
+  ratings comic_ratings[]
 
   @@unique([language_id, title, release_year, page_count])
 }
 
-model user_ratings {
+model comic_ratings {
   id         Int      @id @default(autoincrement()) 
   user_id    Int
   comic_id   Int
