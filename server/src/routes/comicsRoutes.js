@@ -1,7 +1,7 @@
 import express from "express"
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { createComic, deleteComic, getAllComics, updateComic } from "../controllers/comicsController.js";
-import { Role } from "../generated/prisma/enums.js";
+import { Role } from "../generated/prisma/enums.ts";
 
 const router = express.Router();
 
