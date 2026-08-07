@@ -45,7 +45,6 @@ const createUsers = async () => {
     for (let i = 0; i < userCount; i++)
     {
         const user = await createRandomUser();
-
         await prisma.users.create({data: user});
     }
     const admin = await createAdmin();

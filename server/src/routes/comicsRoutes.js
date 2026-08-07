@@ -1,9 +1,13 @@
-import express from "express"
+import express from "express";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
-import { createComic, deleteComic, getAllComics, updateComic } from "../controllers/comicsController.js";
+import {
+  createComic,
+  getAllComics,
+  updateComic,
+} from "../controllers/comicsController.js";
 import { Role } from "../generated/prisma/enums.ts";
 import { validateRequestMiddleware } from "../middlewares/validateRequestMiddleware.js";
-import { createComicValidator } from "../validators/comicsValidators.js";
+import { createComicValidator, updateComicValidator } from "../validators/comicsValidators.js";
 
 const router = express.Router();
 
@@ -15,7 +19,11 @@ router
     validateRequestMiddleware(createComicValidator),
     createComic,
   )
-  .put("/:id", authMiddleware(Role.ADMIN, true), updateComic)
-  .delete("/:id", authMiddleware(Role.ADMIN, true), deleteComic);
+  .patch(
+    "/:id",
+    authMiddleware(Role.ADMIN, true),
+    validateRequestMiddleware(updateComicValidator),
+    updateComic,
+  );
 
 export default router;
